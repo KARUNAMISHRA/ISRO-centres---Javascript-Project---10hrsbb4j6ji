@@ -1,143 +1,108 @@
- // // // console.clear();
-// let URL = 'https://isro.vercel.app/api/centres';
-
-// fetch(URL)
-// .then(response => response.json())
-// .then(data =>{
-//       console.log(data);
-// })
-// getAPI
-const url = "https://isro.vercel.app/api/centres";
-fetch(url)
-  .then((responce) => {
-    return responce.json();
-  })
-  .then((data) => {
-    const result_container = document.getElementById("result-container");
-    for (let i = 0; i < data.centres.length; i++) {
-      var newli = document.createElement("li");
-      newli.className = "card fc hover ";
-      result_container.appendChild(newli);
-      newli.innerHTML =
-       `<div class="nameliItems liItems">
-          <h3>Center Name</h3>
-          <p class="nameinfo">${data.centres[i].name}</p>
-        </div>
-        <div class="cityliItems liItems">
-          <h3>City Name</h3>
-          <p class="cityinfo">${data.centres[i].Place}</p>
-        </div>
-        <div class="stateliItems liItems">
-          <h3>State Name</h3>
-          <p class="stateinfo">${data.centres[i].State}</p>
-        </div>`;
-    }
-  })
-  .catch( ()=> {
-    const result_container = document.getElementById("result-container");
-    result_container.innerHTML=`<div id="error">
-        <img id="err" src="img/warning.png" alt="">
-        <h1>Something Went Wrong !!! Try Again</h1>
-    </div>`;
-  });
-
-// declarations
-
-const citybtn = document.getElementById("city-btn");
-const statebtn = document.getElementById("state-btn");
-const centerbtn = document.getElementById("center-btn");
-const clear = document.getElementById('CLR');
-const search_btn = document.getElementById('searchBtn');
-const search_input = document.getElementById('searchInput');
+const cityBtn = document.getElementById('cityBtn');
+const stateBtn = document.getElementById('stateBtn');
+const centerBtn = document.getElementById('centerBtn')
+const headName = document.getElementById('headName');
+const outputArea = document.getElementById('outputArea')
+const body = document.querySelector('body');
+const btn = document.querySelectorAll('.btn');
+let txtColor = "#004AAD"
 
 
-function handleBtn(e){
-  citybtn.classList.remove("active");
-  statebtn.classList.remove("active")
-  centerbtn.classList.remove("active");
 
-  e.target.classList.add("active");
+//========================➡️➡️➡️➡️button Hover on click⬅️⬅️⬅️⬅️========================
 
-  if(e.target === citybtn) {
-    searchByCity();
-  } else if (e.target === statebtn) {
-    searchByState();
-  } else if (e.target === centerbtn) {
-    searchByCenter();
-  }
-}
 
-// city search
-function searchByCity(){
-  const search_text = search_input.value.toLowerCase();
-  const city = document.getElementsByClassName('cityinfo');
-
-  search_input.setAttribute('placeholder', 'Type here.......');
-
-  for(let k=0; k<city.length; k++){
-    if(city[k].innerText.toLowerCase().indexOf(search_text) === -1){
-      city[k].parentElement.parentElement.style.display = "none";
-    }else{
-      city[k].parentElement.parentElement.style.display = "flex";
-    }
-  }
-}
-
-//centersearch
-function searchByCenter(){
-  const search_text = search_input.value.toLowerCase();
-  const cen = document.getElementsByClassName('nameinfo');
-  search_input.setAttribute('placeholder', 'Type here.......');
-
-  for(let l=0; l<cen.length; l++){
-    if(cen[l].innerText.toLowerCase().indexOf(search_text) === -1){
-      cen[l].parentElement.parentElement.style.display = "none";
-    }else{
-      cen[l].parentElement.parentElement.style.display = "flex";
-    }
-  }
-}
-
-//state search
-function searchByState(){
-  const search_text = search_input.value.toLowerCase();
-  const state = document.getElementsByClassName('stateinfo');
-
-  search_input.setAttribute('placeholder', 'Type here.......');
-
-  for(let m=0; m<state.length; m++){
-    if(state[m].innerText.toLowerCase().indexOf(search_text) === -1){
-      state[m].parentElement.parentElement.style.display = "none";
-    }else{
-      state[m].parentElement.parentElement.style.display = "flex";
-    }
-  }
-}
-
-// listeners
-citybtn.addEventListener("click", handleBtn);
-statebtn.addEventListener("click", handleBtn);
-centerbtn.addEventListener("click", handleBtn);
-
-// searchBtn
-search_btn.addEventListener('click', () => {
-  const search_text = search_input.value.toLowerCase();
-
-  if (citybtn.classList.contains("active")) {
-    searchByCity(search_text);
-  } else if (statebtn.classList.contains("active")) {
-    searchByState(search_text);
-  } else if (centerbtn.classList.contains("active")) {
-    searchByCenter(search_text);
-  }
+btn.forEach(element => {
+    element.addEventListener('click', () => {
+        document.querySelector('.active')?.classList.remove('active');
+        element.classList.add('active');
+    })
 });
 
-// make  default
-clear.addEventListener('click', () => {
+//========================➡️➡️➡️➡️Fetching data and returning⬅️⬅️⬅️⬅️========================
 
-  const all_li = document.getElementsByTagName("li");
-  search_input.value = "";
-  for(let n=0; n<all_li.length; n++){
-    all_li[n].style.display = "grid";
-  }
-});
+async function allCentres() {
+    let response = await fetch('https://isro.vercel.app/api/centres');
+    let data = await response.json();
+    let centres = data.centres;
+    // console.log(centres);
+    return centres;
+}
+
+allCentres();
+
+async function bindingName() {
+    let input = await allCentres();
+    cardBinding(input);
+    console.log(input);
+
+}
+bindingName();
+
+
+//========================➡️➡️➡️➡️Creating card Structure for data⬅️⬅️⬅️⬅️========================
+
+function cardBinding(input) {
+    // console.log(input);
+
+    let list = input.map(function (data) {
+        return `
+         <div class="card">
+                <div class="items">
+                    <h3 class="itemHeader">CENTER</h3>
+                    <P class="itemTxt">${data.name}</P>
+                </div>
+                <div class="items">
+                    <h3 class="itemHeader">CITY</h3>
+                    <P class="itemTxt">${data.Place}</P>
+                </div>
+                <div class="items">
+                    <h3 class="itemHeader">STATE</h3>
+                    <P class="itemTxt">${data.State}</P>
+                </div>
+        </div>
+        `
+    }).join('');
+    // console.log(list);
+    outputArea.innerHTML = `${list}`;
+}
+
+//========================➡️➡️➡️➡️Searching by city, state and centre name ⬅️⬅️⬅️⬅️========================
+
+
+async function searchHandler(type) {
+    // console.log(type);
+    let inputSearch = document.getElementById('input').value.toLowerCase();
+
+    outputArea.innerHTML = '';
+    let data = await allCentres();
+
+    let filterData = data.filter(function (data) {
+        if (type == 'city') {
+            return data.Place.toLowerCase().includes(inputSearch);
+        } else if (type == 'center') {
+            return data.name.toLowerCase().includes(inputSearch);
+        }
+        else if (type == 'state') {
+            return data.State.toLowerCase().includes(inputSearch);
+        }
+    })
+
+    cardBinding(filterData);
+    console.log(filterData)
+}
+
+
+//========================➡️➡️➡️➡️Searching data onclick on the search button  ⬅️⬅️⬅️⬅️========================
+
+const onSearchButtonHandler = async () => {
+    let inputSearch = document.getElementById('input').value.toLowerCase();
+
+    const data = await allCentres();
+    const filterData = data.filter(data =>
+        data.name.toLowerCase().includes(inputSearch) ||
+        data.Place.toLowerCase().includes(inputSearch) ||
+        data.State.toLowerCase().includes(inputSearch)
+    );
+    cardBinding(filterData);
+}
